@@ -1,7 +1,5 @@
 import { Icon, Card, DateSelect } from '~/components'
 
-
-
 export function Dashboard() {
     return (
         <>
