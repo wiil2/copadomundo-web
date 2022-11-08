@@ -1,10 +1,15 @@
 import { useLocalStorage } from 'react-use'
+import { Navigate } from 'react-router-dom'
 import { Icon, Card, DateSelect } from '~/components'
 
 export function Profile() {
     const [auth, setAuth] = useLocalStorage('auth', {})
 
     const logout = () => setAuth({})
+
+    if (!auth?.user?.id) {
+        return <Navigate to="/" replace={true} />
+    }
 
 
     return (
