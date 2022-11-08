@@ -1,6 +1,14 @@
+import { Navigate } from 'react-router-dom'
+import { useLocalStorage } from 'react-use'
 import { Icon, Card, DateSelect } from '~/components'
 
 export function Dashboard() {
+    const [auth] = useLocalStorage('auth', {})
+
+    if (!auth?.user?.id) {
+        return <Navigate to="/" replace={true} />
+    }
+
     return (
         <>
 

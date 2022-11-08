@@ -1,12 +1,21 @@
+import { useLocalStorage } from 'react-use'
 import { Icon, Card, DateSelect } from '~/components'
 
 export function Profile() {
+    const [auth, setAuth] = useLocalStorage('auth', {})
+
+    const logout = () => setAuth({})
+
+
     return (
         <>
 
             <header className="bg-red-500 text-white p-4">
                 <div className="container max-w-3xl flex justify-between">
                     <img src="/src/assets/logo/logo-fundo-vermelho.svg" className="w-28 md:w-40 " />
+                    <div onClick={logout} className="o-2 cursor-pointer">
+                        Sair
+                    </div>
                 </div>
             </header>
 
