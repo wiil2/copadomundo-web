@@ -9,7 +9,7 @@ const validantionSchema = yup.object().shape({
 })
 
 
-export function Card({ gameId, homeTeam, awayTeam, gameTime }) {
+export function Card({ gameId, homeTeam, awayTeam, homeTeamScore, awayTeamScore, gameTime }) {
     const [auth] = useLocalStorage('auth')
     const formik = useFormik({
         onSubmit: (values) => {
@@ -27,8 +27,8 @@ export function Card({ gameId, homeTeam, awayTeam, gameTime }) {
             })
         },
         initialValues: {
-            homeTeamScore: '',
-            awayTeamScore: ''
+            homeTeamScore,
+            awayTeamScore
         },
         validantionSchema
     })

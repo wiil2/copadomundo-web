@@ -1,11 +1,29 @@
-import { useLocalStorage } from 'react-use'
+import { useLocalStorage, useAsyncFn } from 'react-use'
+import axios from 'axios'
+import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Icon, Card, DateSelect } from '~/components'
+import { format, formatISO } from 'date-fns'
 
 export function Profile() {
+    const [currentDate, setDate] = useState(formatISO(new Date(2022, 10, 20)))
     const [auth, setAuth] = useLocalStorage('auth', {})
 
+    const [state, doFetch] = useAsyncFn(async (params) => {
+        const res = await axios({
+            method: 'get',
+            baseURL: 'http://localhost:3000',
+            url: '/games',
+            params
+        })
+        return res.data
+    })
+
     const logout = () => setAuth({})
+
+    useEffect(() => {
+        doFetch({ gameTime: currentDate })
+    }, [currentDate])
 
     if (!auth?.user?.id) {
         return <Navigate to="/" replace={true} />
@@ -30,7 +48,7 @@ export function Profile() {
                         <a href='/dashboard'>
                             <Icon name="arrowBack" className="h-6" />
                         </a>
-                        <h3 className='text-2xl font-bold '>William Berbet</h3>
+                        <h3 className='text-2xl font-bold '>{auth.user.name}</h3>
                     </div>
                 </section>
 
@@ -38,24 +56,21 @@ export function Profile() {
                     <h3 className='text-xl font-bold text-red-500'>Seus Palpites</h3>
 
 
-                    <DateSelect />
+                    <DateSelect currentDate={currentDate} onChange={setDate} />
 
                     <div className='space-y-4'>
-                        <Card
-                            timeA={{ slug: 'sui' }}
-                            timeB={{ slug: 'cam' }}
-                            match={{ time: '7:00' }}
-                        />
-                        <Card
-                            timeA={{ slug: 'uru' }}
-                            timeB={{ slug: 'cor' }}
-                            match={{ time: '7:00' }}
-                        />
-                        <Card
-                            timeA={{ slug: 'por' }}
-                            timeB={{ slug: 'gan' }}
-                            match={{ time: '7:00' }}
-                        />
+                        {state.loading && 'Carregando Jogos...'}
+                        {state.error && 'Ops! Algo deu errado.'}
+
+                        {!state.loading && !state.error && state.value?.map(game => (
+                            <Card
+                                key={game.id}
+                                gameId={game.id}
+                                homeTeam={game.homeTeam}
+                                awayTeam={game.awayTeam}
+                                gameTime={format(new Date(game.gameTime), 'H:mm')}
+                            />
+                        ))}
                     </div>
                 </section>
 
