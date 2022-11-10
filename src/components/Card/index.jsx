@@ -9,7 +9,7 @@ const validantionSchema = yup.object().shape({
 })
 
 
-export function Card({ gameId, homeTeam, awayTeam, homeTeamScore, awayTeamScore, gameTime }) {
+export function Card({ disabled, gameId, homeTeam, awayTeam, homeTeamScore, awayTeamScore, gameTime }) {
     const [auth] = useLocalStorage('auth')
     const formik = useFormik({
         onSubmit: (values) => {
@@ -48,6 +48,7 @@ export function Card({ gameId, homeTeam, awayTeam, homeTeamScore, awayTeamScore,
                     value={formik.values.homeTeamScore}
                     onChange={formik.handleChange}
                     onBlur={formik.handleSubmit}
+                    disabled={disabled}
                 />
 
                 <span className='text-red-500 font-bold'>X</span>
@@ -59,6 +60,7 @@ export function Card({ gameId, homeTeam, awayTeam, homeTeamScore, awayTeamScore,
                     value={formik.values.awayTeamScore}
                     onChange={formik.handleChange}
                     onBlur={formik.handleSubmit}
+                    disabled={disabled}
                 />
 
 

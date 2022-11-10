@@ -14,11 +14,12 @@ export function Dashboard() {
             method: 'get',
             baseURL: 'http://localhost:3000',
             url: `/${auth.user.username}`,
-            params
+
         })
 
         const hunches = res.data.reduce((acc, hunch) => {
             acc[hunch.gameId] = hunch
+            return acc
         }, {})
 
 
@@ -90,8 +91,8 @@ export function Dashboard() {
                                 homeTeam={game.homeTeam}
                                 awayTeam={game.awayTeam}
                                 gameTime={format(new Date(game.gameTime), 'H:mm')}
-                                homeTeamScore={hunches.value?.[game.id]?.homeTeamScore || ''}
-                                awayTeamScore={hunches.value?.[game.id]?.awayTeamScore || ''}
+                                homeTeamScore={hunches?.value?.[game.id]?.homeTeamScore || ''}
+                                awayTeamScore={hunches?.value?.[game.id]?.awayTeamScore || ''}
                             />
                         ))}
                     </div>
