@@ -1,43 +1,53 @@
 import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAsyncFn, useLocalStorage } from 'react-use'
 import { Icon, Card, DateSelect } from '~/components'
 import axios from 'axios'
 import { format, formatISO } from 'date-fns'
 
 export function Profile() {
+    const params = useParams()
+    const navigate = useNavigate()
     const [currentDate, setDate] = useState(formatISO(new Date(2022, 10, 20)))
-    const [auth] = useLocalStorage('auth', {})
+    const [auth, setAuth] = useLocalStorage('auth', {})
 
-    const [hunches, fetchHunches] = useAsyncFn(async () => {
+    const [{ value: user, loading, error }, fetchHunches] = useAsyncFn(async () => {
         const res = await axios({
             method: 'get',
-            baseURL: 'http://localhost:3000',
-            url: `/${auth.user.username}`,
+            baseURL: import.meta.env.VITE_API_URL,
+            url: `/${params.username}`,
 
         })
 
-        const hunches = res.data.reduce((acc, hunch) => {
+        const hunches = res.data.hunches.reduce((acc, hunch) => {
             acc[hunch.gameId] = hunch
             return acc
         }, {})
 
 
-        return hunches
+        return {
+            ...res.data,
+            hunches
+        }
     })
 
     const [games, fetchGames] = useAsyncFn(async (params) => {
         const res = await axios({
             method: 'get',
-            baseURL: 'http://localhost:3000',
+            baseURL: import.meta.env.VITE_API_URL,
             url: '/games',
             params
         })
         return res.data
     })
 
-    const isLoading = games.loading || hunches.loading
-    const hasError = games.error || hunches.error
+    function logOut() {
+        setAuth({})
+        navigate("/login")
+    }
+
+    const isLoading = games.loading || loading
+    const hasError = games.error || error
     const isDone = !isLoading && !hasError
 
     useEffect(() => {
@@ -49,10 +59,10 @@ export function Profile() {
     }, [currentDate])
 
 
-    if (!auth?.user?.id) {
+    /* if (!auth?.user?.id) {
         return <Navigate to="/" replace={true} />
     }
-
+ */
 
     return (
         <>
@@ -60,9 +70,11 @@ export function Profile() {
             <header className="bg-red-500 text-white p-4">
                 <div className="container max-w-3xl flex justify-between">
                     <img src="/src/assets/logo/logo-fundo-vermelho.svg" className="w-28 md:w-40 " />
-                    {/* <div onClick={logout} className="o-2 cursor-pointer">
-                        Sair
-                    </div> */}
+                    {auth?.user?.id && (
+                        <div onClick={logOut} className="o-2 cursor-pointer">
+                            Sair
+                        </div>
+                    )}
                 </div>
             </header>
 
@@ -72,7 +84,7 @@ export function Profile() {
                         <a href='/dashboard'>
                             <Icon name="arrowBack" className="h-6" />
                         </a>
-                        <h3 className='text-2xl font-bold '>{auth.user.name}</h3>
+                        <h3 className='text-2xl font-bold '>{user?.name}</h3>
                     </div>
                 </section>
 
@@ -95,8 +107,8 @@ export function Profile() {
                                 homeTeam={game.homeTeam}
                                 awayTeam={game.awayTeam}
                                 gameTime={format(new Date(game.gameTime), 'H:mm')}
-                                homeTeamScore={hunches?.value?.[game.id]?.homeTeamScore || ''}
-                                awayTeamScore={hunches?.value?.[game.id]?.awayTeamScore || ''}
+                                homeTeamScore={user?.hunches?.[game.id]?.homeTeamScore || ''}
+                                awayTeamScore={user?.hunches?.[game.id]?.awayTeamScore || ''}
                                 disabled={true}
                             />
                         ))}

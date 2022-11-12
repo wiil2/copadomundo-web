@@ -20,7 +20,7 @@ export function Signup() {
         onSubmit: async (values) => {
             const res = await axios({
                 method: 'post',
-                baseURL: 'http://localhost:3000',
+                baseURL: import.meta.env.VITE_API_URL,
                 url: '/users',
                 data: values
             })
