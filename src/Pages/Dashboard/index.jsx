@@ -72,7 +72,7 @@ export function Dashboard() {
                 <section id='header' className="bg-red-500 text-white p-4">
                     <div className="container max-w-3xl space-y-2">
                         <span>Olá William</span>
-                        <h3 className='text-2xl font-bold '>Qual o seu palpite?</h3>
+                        <h3 className='text-2xl font-bold'>Qual o seu palpite?</h3>
                     </div>
                 </section>
 
@@ -94,8 +94,8 @@ export function Dashboard() {
                                 homeTeam={game.homeTeam}
                                 awayTeam={game.awayTeam}
                                 gameTime={format(new Date(game.gameTime), 'H:mm')}
-                                homeTeamScore={user?.hunches?.[game.id]?.homeTeamScore || ''}
-                                awayTeamScore={user?.hunches?.[game.id]?.awayTeamScore || ''}
+                                homeTeamScore={user?.hunches?.[game.id]?.homeTeamScore || '0'}
+                                awayTeamScore={user?.hunches?.[game.id]?.awayTeamScore || '0'}
                             />
                         ))}
                     </div>
